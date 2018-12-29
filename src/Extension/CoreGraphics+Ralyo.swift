@@ -115,7 +115,17 @@ extension CGVector {
         
         self.init(dx: length * sin(radian), dy: length * cos(radian))
     }
-
+    
+    public static func + (lhs: CGVector, rhs: CGVector) -> CGVector {
+        
+        return CGVector.init(dx: lhs.dx + rhs.dx, dy: lhs.dy + rhs.dy)
+    }
+    
+    public static func - (lhs: CGVector, rhs: CGVector) -> CGVector {
+        
+        return CGVector.init(dx: lhs.dx - rhs.dx, dy: lhs.dy - rhs.dy)
+    }
+    
     public static prefix func - (hs: CGVector) -> CGVector {
         
         return CGVector.init(dx: -hs.dx, dy: -hs.dy)
@@ -129,6 +139,15 @@ extension CGVector {
     public static func / (lhs: CGVector, rhs: CGFloat) -> CGVector {
         
         return lhs * (1/rhs)
+    }
+    
+    public func rotateBy(_ radian: CGFloat) -> CGVector {
+        return CGVector.make(dx * cos(radian) - dy * sin(radian), dy * cos(radian) + dx * sin(radian))
+    }
+
+    public static func radianBetweenTwoVector(_ v1: CGVector, _ v2: CGVector) -> CGFloat {
+        
+        return atan2(v1.dy - v2.dy, v1.dx - v2.dx)
     }
 }
 

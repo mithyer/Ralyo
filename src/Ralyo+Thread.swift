@@ -9,7 +9,7 @@
 
 import Foundation
 
-extension NSObject: RalyoProtocol {
+extension NSObject {
     
     @objc fileprivate static func ry_perform_closure(_ info: Any) {
         
