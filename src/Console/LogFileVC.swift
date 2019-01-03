@@ -100,6 +100,7 @@ extension LogFileVC {
         
         lazy var tableView: ConsoleVC.LogListView = {
             let tv = ConsoleVC.LogListView.init(frame: self.view.bounds, style: .plain)
+            tv.allowsSelection = false
             self.view.addSubview(tv)
             return tv
         }()

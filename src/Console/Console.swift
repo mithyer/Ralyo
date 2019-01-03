@@ -78,12 +78,16 @@ open class Console {
         return vc
     }()
 
+    static var didSetup = false
     public static func setup() {
-        _ = self.window
+        if didSetup {
+            fatalError()
+        }
         setupCrashHandler()
+        didSetup = true
     }
     
-    static let sigDic = [SIGHUP: "SIGHUP", SIGINT: "SIGINT", SIGQUIT: "SIGQUIT", SIGABRT: "SIGABRT", SIGILL: "SIGILL", SIGSEGV: "SIGSEGV", SIGFPE: "SIGFPE", SIGBUS: "SIGBUS", SIGPIPE: "SIGPIPE"]
+    static let sigDic = [SIGHUP: "SIGHUP", SIGINT: "SIGINT", SIGTERM: "SIGTERM", SIGQUIT: "SIGQUIT", SIGABRT: "SIGABRT", SIGILL: "SIGILL", SIGSEGV: "SIGSEGV", SIGFPE: "SIGFPE", SIGBUS: "SIGBUS"]
     static func setupCrashHandler() {
         
         NSSetUncaughtExceptionHandler { expt in
@@ -94,6 +98,7 @@ open class Console {
             Console.print(string, color: .red, global: false, file: nil, line: nil, isInput: false)
         }
         
+
         for sig in sigDic.keys {
             signal(sig) { sig in
                 Console.print("SIGNAL \(Console.sigDic[sig]!)\n" + Thread.callStackSymbols.joined(separator: "\n"), color: .red, global: false, file: nil, line: nil, isInput: false)
@@ -128,7 +133,7 @@ extension UIWindow {
     
     open override func motionBegan(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
         super.motionBegan(motion, with: event)
-        if motion == .motionShake, Console.windowIsHidden {
+        if Console.didSetup, motion == .motionShake, Console.windowIsHidden {
             Console.windowIsHidden = false
             Console.consoleVC.reloadData()
         }
@@ -160,7 +165,7 @@ extension Console.Log {
             }
             let now = Date()
             let nowString = CFBundleGetValueForInfoDictionaryKey(CFBundleGetMainBundle(), kCFBundleVersionKey)! as! String + "_" + Console.dateFormatter.string(from: now)
-            curFilePath = outputDirectory + nowString
+            curFilePath = outputDirectory + "/" + nowString
             curFileName = nowString
             if !fileManager.fileExists(atPath: curFilePath!) {
                 let res = fileManager.createFile(atPath: curFilePath!, contents: Data(), attributes: [.creationDate: now, .ownerAccountName: "ray"])
@@ -174,7 +179,6 @@ extension Console.Log {
         
         static func resetFileHandler() {
             writeQueue.async {
-                self.fileHandler.synchronizeFile()
                 self.fileHandler.closeFile()
                 self.fileHandler = self.newFileHandler()
             }
@@ -192,12 +196,18 @@ extension Console.Log {
         static func append(_ log: Console.Log) -> UInt64 {
             var point: UInt64!
             writeQueue.sync {
-                guard var data = try? encoder.encode(log) else {
-                    return
+                var data: Data!
+                do {
+                    data = try encoder.encode(log)
+                } catch let e {
+                    print(e)
                 }
                 data.append(",".data(using: .utf8)!)
                 point = self.fileHandler.seekToEndOfFile()
                 self.fileHandler.write(data)
+            }
+            writeQueue.async {
+                self.fileHandler.synchronizeFile()
             }
             return point
         }
@@ -220,7 +230,7 @@ extension Console.Log {
         }
         
         static func logs(forFileName name: String) -> [Console.Log]? {
-            guard var data = try? Data.init(contentsOf: URL.init(fileURLWithPath: self.outputDirectory + name)) else {
+            guard var data = try? Data.init(contentsOf: URL.init(fileURLWithPath: self.outputDirectory + "/" + name)) else {
                 return nil
             }
             let range = Range<Data.Index>.init(NSRange.init(location: 0, length: 0))!

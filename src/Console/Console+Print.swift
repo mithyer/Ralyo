@@ -22,6 +22,7 @@ public func console_assert(_ condition: @autoclosure () -> Bool, _ message: @aut
     }
     #endif
 }
+
 public func console_assertFailure(_ message: @autoclosure () -> String = "", file: StaticString = #file, line: UInt = #line) {
     #if !PUBLISH
     console_assert(false, message, file: file, line: line)
@@ -32,6 +33,10 @@ public func console_assertFailure(_ message: @autoclosure () -> String = "", fil
 extension Console {
     
     static func print<T>(_ item: @autoclosure () -> T, color: UIColor? = nil, global: Bool? = nil, file: StaticString? = #file, line: UInt? = #line, isInput: Bool) {
+        
+        if !Console.didSetup {
+            return
+        }
         
         let content = "\(item())"
         let now = Date()

@@ -46,7 +46,7 @@ class ImageCacher: Cacher {
     }()
     
     func pathForKey(_ key: String) -> String {
-        return diskPath + key
+        return diskPath + "/" + key
     }
 
     func cacheToDisk(data: Data, key: String, completed: ((Bool) -> Void)?) {
