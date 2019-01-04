@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import ObjectiveC
 
 public class Downloader {
     

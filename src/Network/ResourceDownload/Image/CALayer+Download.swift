@@ -6,7 +6,7 @@
 //  Copyright © 2018年 ray. All rights reserved.
 //
 
-import UIKit
+import QuartzCore
 
 extension CALayer {
     

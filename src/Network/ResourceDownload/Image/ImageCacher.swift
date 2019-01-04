@@ -6,7 +6,7 @@
 //  Copyright © 2018年 ray. All rights reserved.
 //
 
-import UIKit
+import Foundation
 
 extension GIFImage: Datable {
     public static func obj<T: Datable>(fromData data: Data) -> T? {
