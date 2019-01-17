@@ -9,22 +9,26 @@
 
 import Foundation
 
-extension NSObject {
-    
+
+extension Thread {
+
     @objc fileprivate static func ry_perform_closure(_ info: Any) {
         autoreleasepool {
             let closure = info as! () -> Void
             closure()
         }
     }
-}
-
-extension Ralyo where OBJ == Ralyo_Public_Funcs {
     
-    public func perform(_ closure: @escaping () -> Void, on thread: Thread, waitUntilDone: Bool, modes: [RunLoop.Mode]? = nil) {
+    static private func perform(_ closure: @escaping () -> Void, on thread: Thread, waitUntilDone: Bool, modes: [RunLoop.Mode]? = nil) {
         let modes = modes ?? [RunLoop.Mode.default]
-        NSObject.perform(#selector(NSObject.ry_perform_closure), on: thread, with: closure, waitUntilDone: waitUntilDone, modes: modes.map{ $0.rawValue})
+        Thread.perform(#selector(Thread.ry_perform_closure), on: thread, with: closure, waitUntilDone: waitUntilDone, modes: modes.map{ $0.rawValue})
+    }
+    
+    public func async(onModes modes: [RunLoop.Mode]? = nil, _ closure: @escaping () -> Void) {
+        Thread.perform(closure, on: self, waitUntilDone: false, modes: modes)
+    }
+    
+    public func sync(onModes modes: [RunLoop.Mode]? = nil, _ closure: @escaping () -> Void) {
+        Thread.perform(closure, on: self, waitUntilDone: true, modes: modes)
     }
 }
-
-

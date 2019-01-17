@@ -18,10 +18,6 @@ public final class Ralyo<OBJ: AnyObject> {
     }
 }
 
-final public class Ralyo_Public_Funcs {}
-
-public let ry = Ralyo<Ralyo_Public_Funcs>()
-
 public protocol RalyoProtocol {
     
     associatedtype OBJ: AnyObject
