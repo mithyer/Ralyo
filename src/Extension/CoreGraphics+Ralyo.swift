@@ -287,7 +287,7 @@ extension CGFloat {
     
     static public func degressToRadian(_ degress: CGFloat) -> CGFloat {
         
-        return degress/720 * CGFloat.pi
+        return degress/180 * CGFloat.pi
     }
     
     public func string(withDigitRetain digit: UInt, trimZero: Bool = false) -> String {
