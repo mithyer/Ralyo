@@ -38,13 +38,23 @@ extension CGImage {
         }
         
         let atals: Atalas
-        private lazy var imageDic = [String: CGImage]()
-        private let fileName: String
+        private lazy var imageDic = [String: (CIImage, Atalas.ImageInfoGroup.ImageInfo)]()
+        public let fileName: String
         private let scale: CGFloat
+        
+        public init(fileName: String, scale: CGFloat) {
+            
+            let path = Bundle.main.path(forResource: "\(fileName).atlasc/\(fileName)", ofType: "plist")!
+            let atalsData = try! Data.init(contentsOf: URL.init(fileURLWithPath: path), options: [.mappedIfSafe, .uncached])
+            self.atals = try! PropertyListDecoder().decode(Atalas.self, from: atalsData)
+            self.fileName = fileName
+            self.scale = scale
+            self._load()
+        }
         
         private func _load() {
             
-            if !imageDic.isEmpty {
+            if !self.imageDic.isEmpty {
                 return
             }
             for group in atals.images {
@@ -57,12 +67,8 @@ extension CGImage {
                 let imgSource = CIImage.init(data: data)!
                 
                 let subimages = group.subimages!
-                let ciContext = CIContext()
                 
                 for info in subimages {
-                    
-                    let sourceSize = NSCoder.cgSize(for: info.spriteSourceSize)
-                    let offset = NSCoder.cgPoint(for: info.spriteOffset)
                     var textureRect = NSCoder.cgRect(for: info.textureRect)
                     textureRect.origin.y = imgSource.extent.height - textureRect.maxY
                     let rotated = info.textureRotated!
@@ -71,43 +77,58 @@ extension CGImage {
                     if rotated {
                         img = img.oriented(forExifOrientation: Int32(CGImagePropertyOrientation.left.rawValue))
                     }
-                    var cgImg = ciContext.createCGImage(img, from: img.extent)!
-                    
-                    let context = CGContext.init(data: nil, width: Int(sourceSize.width * scale), height: Int(sourceSize.height * scale), bitsPerComponent: 8, bytesPerRow: 0, space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedFirst.rawValue)!
-                    context.draw(cgImg, in: CGRect.init(x: offset.x * scale, y: offset.y * scale, width: (rotated ? textureRect.height : textureRect.width) * scale, height: (rotated ? textureRect.width : textureRect.height) * scale))
-                    cgImg = context.makeImage()!
-                    
-                    self.imageDic[name] = cgImg
+                    self.imageDic[name] = (img, info)
                 }
             }
         }
         
-        public func load(async: Bool, _ completed: @escaping ([String: CGImage]?) -> Void) {
-    
-            if async {
-                DispatchQueue.global().async {
-                    self._load()
-                    completed(self.imageDic)
-                }
-            } else {
-                self._load()
-                completed(self.imageDic)
-            }
-        }
-        
-        public init(fileName: String, scale: CGFloat) {
+        func createCGImage(ciImg: CIImage, info: Atalas.ImageInfoGroup.ImageInfo, ciContext: CIContext) -> CGImage {
             
-            let path = Bundle.main.path(forResource: "\(fileName).atlasc/\(fileName)", ofType: "plist")!
-            let atalsData = try! Data.init(contentsOf: URL.init(fileURLWithPath: path), options: [.mappedIfSafe, .uncached])
-            self.atals = try! PropertyListDecoder().decode(Atalas.self, from: atalsData)
-            self.fileName = fileName
-            self.scale = scale
+            let sourceSize = NSCoder.cgSize(for: info.spriteSourceSize)
+            let offset = NSCoder.cgPoint(for: info.spriteOffset)
+            let rotated = info.textureRotated!
+            let textureRect = NSCoder.cgRect(for: info.textureRect)
+            
+            var cgImg = ciContext.createCGImage(ciImg, from: ciImg.extent)!
+            let context = CGContext.init(data: nil, width: Int(sourceSize.width * scale), height: Int(sourceSize.height * scale), bitsPerComponent: 8, bytesPerRow: 0, space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedFirst.rawValue)!
+            context.draw(cgImg, in: CGRect.init(x: offset.x * scale, y: offset.y * scale, width: (rotated ? textureRect.height : textureRect.width) * scale, height: (rotated ? textureRect.width : textureRect.height) * scale))
+            cgImg = context.makeImage()!
+            
+            return cgImg
         }
         
-        public func image(forName name: String) -> CGImage? {
-            let img = self.imageDic[name]
-            return img
+        public func load(byNames names: [String], async: Bool, _ completed: @escaping ([String: CGImage]?) -> Void) {
+    
+            let block = {
+                let ciContext = CIContext()
+                var cgImgDic = [String: CGImage]()
+                for name in names {
+                    guard let (ciImg, info) = self.imageDic[name] else {
+                        continue
+                    }
+                    let img = self.createCGImage(ciImg: ciImg, info: info, ciContext: ciContext)
+                    cgImgDic[name] = img
+                }
+                completed(cgImgDic)
+            }
+            if async {
+                DispatchQueue.global().async(execute: block)
+            } else {
+                block()
+            }
         }
+        
+        public func loadAll(async: Bool, _ completed: @escaping ([String: CGImage]?) -> Void) {
+            let names = [String](self.imageDic.keys)
+            self.load(byNames: names, async: async, completed)
+        }
+        
+        public func load(byName name: String, async: Bool, _ completed: @escaping (CGImage?) -> Void) {
+            self.load(byNames: [name], async: async) { dic in
+                completed(dic?[name])
+            }
+        }
+
     }
     
     
