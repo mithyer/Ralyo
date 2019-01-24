@@ -49,14 +49,7 @@ extension CGImage {
             self.atals = try! PropertyListDecoder().decode(Atalas.self, from: atalsData)
             self.fileName = fileName
             self.scale = scale
-            self._load()
-        }
-        
-        private func _load() {
             
-            if !self.imageDic.isEmpty {
-                return
-            }
             for group in atals.images {
                 
                 let imgPath = group.path as NSString
