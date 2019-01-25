@@ -75,8 +75,13 @@ extension CGImage {
             }
         }
         
-        func createCGImage(ciImg: CIImage, info: Atalas.ImageInfoGroup.ImageInfo, ciContext: CIContext) -> CGImage {
+        static func createCGImage(ciImg: CIImage, info: Atalas.ImageInfoGroup.ImageInfo, scale: CGFloat) -> CGImage {
             
+            struct const {
+                static let ciContext = CIContext()
+            }
+            
+            let ciContext = const.ciContext
             let sourceSize = NSCoder.cgSize(for: info.spriteSourceSize)
             let offset = NSCoder.cgPoint(for: info.spriteOffset)
             let rotated = info.textureRotated!
@@ -91,15 +96,14 @@ extension CGImage {
         }
         
         public func load(byNames names: [String], async: Bool, _ completed: @escaping ([String: CGImage]?) -> Void) {
-    
+
             let block = {
-                let ciContext = CIContext()
                 var cgImgDic = [String: CGImage]()
                 for name in names {
                     guard let (ciImg, info) = self.imageDic[name] else {
                         continue
                     }
-                    let img = self.createCGImage(ciImg: ciImg, info: info, ciContext: ciContext)
+                    let img = AtalasUnarchiver.createCGImage(ciImg: ciImg, info: info, scale: self.scale)
                     cgImgDic[name] = img
                 }
                 completed(cgImgDic)
