@@ -64,22 +64,22 @@ extension Console {
             Swift.print(printText)
         }
         
-        let log = Log(content: content, color: color, date: now, fileName: fileName, line: line)
-        var shouldResetFile = false
-        logsQueue.sync {
+        logsQueue.async {
+            let log = Log(content: content, color: color, date: now, fileName: fileName, line: line)
+            var shouldResetFile = false
             if self.logs.count >= maxLogAmount {
                 self.logs.removeAll()
                 shouldResetFile = true
             }
             self.logs.append(log)
-        }
-        if shouldResetFile {
-            Log.DiskOutput.resetFileHandler()
-        }
-        _ = Log.DiskOutput.append(log)
-        if !Console.windowIsHidden {
-            DispatchQueue.main.async {
-                self.consoleVC.reloadData()
+            if shouldResetFile {
+                Log.DiskOutput.resetFileHandler()
+            }
+            _ = Log.DiskOutput.append(log)
+            if !Console.windowIsHidden {
+                DispatchQueue.main.async {
+                    self.consoleVC.reloadData()
+                }
             }
         }
     }
