@@ -125,6 +125,14 @@ extension CGImage {
                 completed(dic?[name])
             }
         }
+        
+        public func image(byName name: String) -> CGImage? {
+            var img: CGImage?
+            self.load(byName: name, async: false) {
+                img = $0
+            }
+            return img
+        }
 
     }
     
