@@ -46,6 +46,11 @@ extension CGRect {
         self.init(origin: .init(x: center.x - size.width/2, y: center.y - size.height/2), size: size)
     }
     
+    public init(pos0: CGPoint, pos1: CGPoint) {
+        
+        self.init(origin: CGPoint.init(x: min(pos0.x, pos1.x), y: min(pos0.y, pos1.y)), size: CGSize.init(width: abs(pos1.x - pos0.x), height: abs(pos1.y - pos0.y)))
+    }
+
     public func moveBy(_ dx: CGFloat, _ dy: CGFloat) -> CGRect {
         
         let origin = self.origin + CGVector.make(dx, dy)
