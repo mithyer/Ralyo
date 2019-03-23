@@ -12,6 +12,11 @@ import MessageUI
 
 let cellReuseId = "cellReuseId"
 
+public struct ConsoleNotification {
+    
+    public static let didPrintText = Notification.Name.init("ConsoleNotification.didPrintText")
+}
+
 class ConsoleVC: UIViewController {
     
     override var prefersStatusBarHidden: Bool {
@@ -370,6 +375,7 @@ extension ConsoleVC: UITextFieldDelegate {
             textField.text = nil
             self.inputText = nil
             Console.print(text, file: nil, line: nil, isInput: true)
+            NotificationCenter.default.post(name: ConsoleNotification.didPrintText, object: nil, userInfo: ["text": text])
         }
         return false
     }
