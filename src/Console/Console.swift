@@ -95,13 +95,16 @@ open class Console {
             let stack = expt.callStackSymbols.joined(separator: "\n")
             let reason = expt.reason
             let string = "\nEXCEPTION:\n-NAME:\(name.rawValue)\n-REASON:\(reason ?? "unknown")\n-STACK:\n\(stack)"
-            Console.print(string, color: .red, global: false, file: nil, line: nil, isInput: false)
+            let log = Log(content: string, color: .red, date: Date(), fileName: nil, line: nil)
+            Log.DiskOutput.append(log, false)
         }
         
 
         for sig in sigDic.keys {
             signal(sig) { sig in
-                Console.print("SIGNAL \(Console.sigDic[sig]!)\n" + Thread.callStackSymbols.joined(separator: "\n"), color: .red, global: false, file: nil, line: nil, isInput: false)
+                let string = "SIGNAL \(Console.sigDic[sig]!)\n" + Thread.callStackSymbols.joined(separator: "\n")
+                let log = Log(content: string, color: .red, date: Date(), fileName: nil, line: nil)
+                Log.DiskOutput.append(log, false)
             }
         }
     }
@@ -193,9 +196,9 @@ extension Console.Log {
         
         static let writeQueue = DispatchQueue(label: "ray.console.output")
         
-        static func append(_ log: Console.Log) -> UInt64 {
-            var point: UInt64!
-            writeQueue.sync {
+        static func append(_ log: Console.Log, _ async: Bool = true) {
+            let `func` = async ? writeQueue.async : writeQueue.sync
+            `func`(DispatchWorkItem.init(block: {
                 var data: Data!
                 do {
                     data = try encoder.encode(log)
@@ -203,13 +206,10 @@ extension Console.Log {
                     print(e)
                 }
                 data.append(",".data(using: .utf8)!)
-                point = self.fileHandler.seekToEndOfFile()
+                _ = self.fileHandler.seekToEndOfFile()
                 self.fileHandler.write(data)
-            }
-            writeQueue.async {
                 self.fileHandler.synchronizeFile()
-            }
-            return point
+            }))
         }
         
         static func logFileNames() -> [String]? {
@@ -241,7 +241,7 @@ extension Console.Log {
         }
         
         static func removeLogFile(forName name: String) {
-            try? FileManager.default.removeItem(atPath: self.outputDirectory + name)
+            try? FileManager.default.removeItem(atPath: self.outputDirectory + "/" + name)
         }
     }
 }
