@@ -42,9 +42,9 @@ extension CGImage {
         public let fileName: String
         private let scale: CGFloat
         
-        public init(fileName: String, scale: CGFloat) {
+        public init(fileName: String, scale: CGFloat, bundle: Bundle = Bundle.main) {
             
-            let path = Bundle.main.path(forResource: "\(fileName).atlasc/\(fileName)", ofType: "plist")!
+            let path = bundle.path(forResource: "\(fileName).atlasc/\(fileName)", ofType: "plist")!
             let atalsData = try! Data.init(contentsOf: URL.init(fileURLWithPath: path), options: [.mappedIfSafe, .uncached])
             self.atals = try! PropertyListDecoder().decode(Atalas.self, from: atalsData)
             self.fileName = fileName
@@ -55,7 +55,7 @@ extension CGImage {
                 let imgPath = group.path as NSString
                 let imgFile = (imgPath.lastPathComponent as NSString).deletingPathExtension
                 let imgExtension = imgPath.pathExtension
-                let path = Bundle.main.path(forResource: "\(fileName).atlasc/\(imgFile)", ofType: imgExtension)!
+                let path = bundle.path(forResource: "\(fileName).atlasc/\(imgFile)", ofType: imgExtension)!
                 let data = try! Data.init(contentsOf: URL.init(fileURLWithPath: path), options: [.mappedIfSafe, .uncached])
                 let imgSource = CIImage.init(data: data)!
                 
