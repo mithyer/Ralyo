@@ -17,7 +17,9 @@ public func console_print<T>(_ item: @autoclosure () -> T, color: @autoclosure (
 public func console_assert(_ condition: @autoclosure () -> Bool, _ message: @autoclosure () -> String = "", file: StaticString = #file, line: UInt = #line) {
     #if !PUBLISH
     if !condition() {
-        Console.print("Console Assert Failed:\(message()) file:\(file) line:\(line)", color: UIColor.red, global: true, file: file, line: line, isInput: false)
+        let content = "Console Assert Failed:\(message()) file:\(file) line:\(line)\n\nStack:\n\(Thread.callStackSymbols.joined(separator: "\n"))"
+        Console.print(content, color: UIColor.red, global: true, file: file, line: line, isInput: false)
+        NotificationCenter.default.post(name: Console.didAssertFailedNotification, object: nil, userInfo: ["content": content])
         abort()
     }
     #endif

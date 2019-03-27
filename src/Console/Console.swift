@@ -10,6 +10,10 @@
 import UIKit
 
 open class Console {
+    
+    public static let didPrintTextNotification = Notification.Name.init("Console.didPrintTextNotification")
+    public static let didCatchAppCrashNotification = Notification.Name.init("Console.didCatchAppCrashNotification")
+    public static let didAssertFailedNotification = Notification.Name.init("Console.didAssertFailedNotification")
 
     struct Log: Codable {
         
@@ -97,6 +101,7 @@ open class Console {
             let string = "\nEXCEPTION:\n-NAME:\(name.rawValue)\n-REASON:\(reason ?? "unknown")\n-STACK:\n\(stack)"
             let log = Log(content: string, color: .red, date: Date(), fileName: nil, line: nil)
             Log.DiskOutput.append(log, false)
+            NotificationCenter.default.post(name: Console.didCatchAppCrashNotification, object: nil, userInfo: ["content": string])
         }
         
 
@@ -105,6 +110,7 @@ open class Console {
                 let string = "SIGNAL \(Console.sigDic[sig]!)\n" + Thread.callStackSymbols.joined(separator: "\n")
                 let log = Log(content: string, color: .red, date: Date(), fileName: nil, line: nil)
                 Log.DiskOutput.append(log, false)
+                NotificationCenter.default.post(name: Console.didCatchAppCrashNotification, object: nil, userInfo: ["content": string])
             }
         }
     }
