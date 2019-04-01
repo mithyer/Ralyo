@@ -19,16 +19,21 @@ extension Thread {
         }
     }
     
-    static private func perform(_ closure: @escaping () -> Void, on thread: Thread, waitUntilDone: Bool, modes: [RunLoop.Mode]? = nil) {
+    static fileprivate func perform(_ closure: @escaping () -> Void, on thread: Thread, waitUntilDone: Bool, modes: [RunLoop.Mode]? = nil) {
         let modes = modes ?? [RunLoop.Mode.default]
         Thread.perform(#selector(Thread.ry_perform_closure), on: thread, with: closure, waitUntilDone: waitUntilDone, modes: modes.map{ $0.rawValue})
     }
     
+}
+
+extension Ralyo where OBJ: Thread {
+
     public func async(onModes modes: [RunLoop.Mode]? = nil, _ closure: @escaping () -> Void) {
-        Thread.perform(closure, on: self, waitUntilDone: false, modes: modes)
+        Thread.perform(closure, on: self.obj, waitUntilDone: false, modes: modes)
     }
     
     public func sync(onModes modes: [RunLoop.Mode]? = nil, _ closure: @escaping () -> Void) {
-        Thread.perform(closure, on: self, waitUntilDone: true, modes: modes)
+        Thread.perform(closure, on: self.obj, waitUntilDone: true, modes: modes)
     }
+
 }
