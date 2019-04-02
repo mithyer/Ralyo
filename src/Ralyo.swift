@@ -51,7 +51,7 @@ public final class Ralyo<OBJ: AnyObject> {
         }
     }
     
-    public func associatedStrongStoredProperty<T: RalyoProperty>(_ initProperty: @autoclosure () -> T) -> T {
+    public func associatedStrongStoredProperty<T: RalyoProperty>(_ initProperty: () -> T) -> T {
         return strongStoredObject(forKey: &ralyoPropertyKey) ?? {
             let property = initProperty()
             strongStore(property, forKey: &ralyoPropertyKey)

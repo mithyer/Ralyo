@@ -46,13 +46,28 @@ extension Ralyo where OBJ: UIViewController {
                 timer.invalidate()
                 return
             }
-            if rootVC.isBeingDismissed || rootVC.isBeingPresented {
+            
+            if rootVC.isBeingDismissed || rootVC.isBeingPresented || !rootVC.isViewLoaded {
                 return
             }
             if let info = self.needToPresentInfos.first {
                 let vcToPresent = info.ctrler
                 
                 if nil == rootVC.presentedViewController {
+                    
+                    // test is in the window hierarchy, or present will cause memery leak
+                    var next: UIResponder?
+                    var window: UIWindow?
+                    repeat {
+                        next = rootVC.next
+                        if let next = next as? UIWindow {
+                            window = next
+                        }
+                    } while nil == window && next != nil
+                    if nil == window {
+                        return
+                    }
+                    
                     self.queuePresentDelegate?.queuePresentWillPresent?(vcToPresent, onVC: rootVC)
                     rootVC.present(vcToPresent, animated: info.animated, completion: info.presented)
                     if nil == rootVC.presentedViewController || nil == info.countdown {
@@ -77,7 +92,7 @@ extension Ralyo where OBJ: UIViewController {
             let property = Property()
             property.rootVC = self.obj
             return property
-        }())
+        })
     }
     
     public var queuePresentDelegate: UIViewControllerQueuePresentDelegate? {
@@ -91,13 +106,14 @@ extension Ralyo where OBJ: UIViewController {
     
     public func queuePresent(_ vc: UIViewController, animated: Bool = true, dismissSecondsAfterAppear seconds: TimeInterval? = nil, _ presented: (() -> Void)? = nil) {
         let rootVC = self.obj
+        let info = QueuePresentInfo.init(ctrler: vc, animated: animated, dismissSeconds: seconds, presented: presented)
+        self.property.needToPresentInfos.append(info)
         if nil == self.property.queuePresentTimer {
             self.property.queuePresentTimer = Timer.scheduledTimer(timeInterval: 0.1, target: self.property, selector: #selector(Property.timerUpdate(_:)), userInfo: nil, repeats: true)
             self.queuePresentDelegate?.queuePresentWillStart?(onVC: rootVC)
+            self.property.queuePresentTimer!.fire()
         }
-        let info = QueuePresentInfo.init(ctrler: vc, animated: animated, dismissSeconds: seconds, presented: presented)
-        self.property.needToPresentInfos.append(info)
-        self.property.queuePresentTimer!.fire()
+        
     }
 }
 
