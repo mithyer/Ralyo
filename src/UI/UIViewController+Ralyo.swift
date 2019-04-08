@@ -104,16 +104,27 @@ extension Ralyo where OBJ: UIViewController {
         }
     }
     
-    public func queuePresent(_ vc: UIViewController, animated: Bool = true, dismissSecondsAfterAppear seconds: TimeInterval? = nil, _ presented: (() -> Void)? = nil) {
+    public var willPresentViewControllersInQueue: [UIViewController] {
+        return self.property.needToPresentInfos.map { $0.ctrler }
+    }
+    
+    public func cancelPresentViewController(inQueue where: (UIViewController) -> Bool) {
+        self.property.needToPresentInfos.removeAll { (info) -> Bool in
+            let ctrler = info.ctrler
+            let res = `where`(ctrler)
+            return res
+        }
+    }
+    
+    public func queuePresent(_ viewController: UIViewController, animated: Bool = true, dismissSecondsAfterAppear seconds: TimeInterval? = nil, _ presented: (() -> Void)? = nil) {
         let rootVC = self.obj
-        let info = QueuePresentInfo.init(ctrler: vc, animated: animated, dismissSeconds: seconds, presented: presented)
+        let info = QueuePresentInfo.init(ctrler: viewController, animated: animated, dismissSeconds: seconds, presented: presented)
         self.property.needToPresentInfos.append(info)
         if nil == self.property.queuePresentTimer {
             self.property.queuePresentTimer = Timer.scheduledTimer(timeInterval: 0.1, target: self.property, selector: #selector(Property.timerUpdate(_:)), userInfo: nil, repeats: true)
             self.queuePresentDelegate?.queuePresentWillStart?(onVC: rootVC)
             self.property.queuePresentTimer!.fire()
         }
-        
     }
 }
 
