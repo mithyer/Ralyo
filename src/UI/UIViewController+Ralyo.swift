@@ -73,10 +73,14 @@ extension Ralyo where OBJ: UIViewController {
                     if nil == rootVC.presentedViewController || nil == info.countdown {
                         self.needToPresentInfos.removeFirst()
                     }
-                } else if let countdown = info.countdown, rootVC.presentedViewController == info.ctrler {
-                    info.countdown = countdown - timer.timeInterval
-                    if info.countdown! <= 0 {
-                        rootVC.dismiss(animated: info.animated)
+                } else if let countdown = info.countdown {
+                    if rootVC.presentedViewController == info.ctrler {
+                        info.countdown = countdown - timer.timeInterval
+                        if info.countdown! <= 0 {
+                            info.ctrler.dismiss(animated: info.animated)
+                            self.needToPresentInfos.removeFirst()
+                        }
+                    } else {
                         self.needToPresentInfos.removeFirst()
                     }
                 }
