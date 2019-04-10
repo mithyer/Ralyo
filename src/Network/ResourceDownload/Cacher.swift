@@ -25,6 +25,8 @@ public protocol Cacher: class {
 
     func getDiskCacheSize() -> UInt64?
     func clearCache()
+    
+    
 }
 
 

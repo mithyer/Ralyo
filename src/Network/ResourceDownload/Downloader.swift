@@ -31,21 +31,21 @@ public class Downloader {
     }
     
     
-    public func cacheDownload<K: Cacher>(cacher: K, resource: Resource, priority: Float = 0, handlerKey: String? = nil, progressHandler: ProgressHandler? = nil, completionHandler: ((K.T?, Error?) -> Void)? = nil) {
+    public func cacheDownload<K: Cacher>(cacher: K, resource: Resource, priority: Float = 0, handlerKey: String? = nil, progressHandler: ProgressHandler? = nil, completionHandler: ((K.T?, Bool/*from cache*/, Error?) -> Void)? = nil) {
         
         let startDownload = { [weak self, weak cacher] in
             self?.download(resource: resource, priority: priority, handlerKey: handlerKey, progressHandler: progressHandler, completionHandler: { (data, error) in
                 guard nil == error, let data = data else {
-                    completionHandler?(nil, error)
+                    completionHandler?(nil, false, error)
                     return
                 }
                 guard let obj: K.T = K.T.obj(fromData: data) else {
-                    completionHandler?(nil, error)
+                    completionHandler?(nil, false, error)
                     return
                 }
                 cacher?.cacheToDisk(data: data, key: resource.cacheKey, completed: nil)
                 cacher?.cacheToMemery(data: data, key: resource.cacheKey, completed: nil)
-                completionHandler?(obj, error)
+                completionHandler?(obj, false, error)
             })
         }
         
@@ -54,7 +54,7 @@ public class Downloader {
             cacher?.objFromDisk(key: key) { res in
                 if let res = res {
                     cacher?.cacheToMemery(data: res.0, key: key, completed: nil)
-                    completionHandler?(res.1, nil)
+                    completionHandler?(res.1, true, nil)
                 } else {
                     startDownload()
                 }
@@ -63,7 +63,7 @@ public class Downloader {
         
         cacher.objFromMemery(key: key) { obj in
             if let obj = obj {
-                completionHandler?(obj, nil)
+                completionHandler?(obj, true, nil)
             } else {
                 tryGetObjFromDisk()
             }

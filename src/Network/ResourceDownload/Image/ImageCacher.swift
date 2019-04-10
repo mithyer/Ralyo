@@ -14,9 +14,11 @@ extension GIFImage: Datable {
     }
 }
 
-class ImageCacher: Cacher {
+public class ImageCacher: Cacher {
     
-    typealias T = GIFImage
+    public typealias T = GIFImage
+    
+    public init() {}
     
     let rwQueue: OperationQueue = {
         let queue = OperationQueue()
@@ -49,7 +51,7 @@ class ImageCacher: Cacher {
         return diskPath + "/" + key
     }
 
-    func cacheToDisk(data: Data, key: String, completed: ((Bool) -> Void)?) {
+    public func cacheToDisk(data: Data, key: String, completed: ((Bool) -> Void)?) {
         
         self.rwQueue.addOperation {
             var res = true
@@ -66,15 +68,16 @@ class ImageCacher: Cacher {
         }
     }
     
-    func cacheToMemery(data: Data, key: String, completed: ((Bool) -> Void)?) {
+    public func cacheToMemery(data: Data, key: String, completed: ((Bool) -> Void)?) {
         let kb = data.count/1024
         if kb > 1048 {
             return
         }
         self.memeryCache.setObject(data as NSData, forKey: key as NSString, cost: kb)
     }
+
     
-    func objFromDisk(key: String, got: @escaping ((Data, T)?) -> Void) {
+    public func objFromDisk(key: String, got: @escaping ((Data, T)?) -> Void) {
         self.rwQueue.addOperation {
             let res: (Data, T)? = {
                 guard let data = try? Data.init(contentsOf: URL.init(fileURLWithPath: self.pathForKey(key)), options: [.mappedIfSafe, .uncached]) else {
@@ -89,20 +92,18 @@ class ImageCacher: Cacher {
         }
     }
     
-    func objFromMemery(key: String, got: @escaping (T?) -> Void) {
-        self.rwQueue.addOperation {
-            let res: T? = {
-                guard let data = self.memeryCache.object(forKey: key as NSString) as Data? else {
-                    return nil
-                }
-                return GIFImage.init(data)
-            }()
-            got(res)
-        }
+    public func objFromMemery(key: String, got: @escaping (T?) -> Void) {
+        let res: T? = {
+            guard let data = self.memeryCache.object(forKey: key as NSString) as Data? else {
+                return nil
+            }
+            return GIFImage.init(data)
+        }()
+        got(res)
     }
     
     var diskCacheSize: UInt64?
-    func getDiskCacheSize() -> UInt64? {
+    public func getDiskCacheSize() -> UInt64? {
         if let diskCacheSize = self.diskCacheSize {
             return diskCacheSize
         }
@@ -123,7 +124,7 @@ class ImageCacher: Cacher {
         return total > 0 ? total : nil
     }
     
-    func clearCache() {
+    public func clearCache() {
         diskCacheSize = nil
         self.rwQueue.cancelAllOperations()
         self.rwQueue.addOperations([BlockOperation.init(block: {

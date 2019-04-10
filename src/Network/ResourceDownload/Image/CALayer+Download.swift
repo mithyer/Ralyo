@@ -52,7 +52,7 @@ extension CALayer {
         let resourcePair = ResourcePair.init(rd.0, prd?.0)
         self.resourcePair = resourcePair
         if let prd = prd {
-            prd.1.cacheDownload(cacher: CALayer.imageCacher, resource: prd.0, handlerKey: handlerKey) { [weak self, weak resourcePair] (image, error) in
+            prd.1.cacheDownload(cacher: CALayer.imageCacher, resource: prd.0, handlerKey: handlerKey) { [weak self, weak resourcePair] (image, _, error) in
                 DispatchQueue.main.async {
                     guard let `self` = self, let rp = resourcePair, rp.placeholderResource == prd.0 else {
                         return
@@ -70,7 +70,7 @@ extension CALayer {
                     downloadProgressHandler?(r, t)
                 }
             }
-            }, completionHandler: { [weak self, weak resourcePair] image, error in
+            }, completionHandler: { [weak self, weak resourcePair] image, _, error in
                 DispatchQueue.main.async {
                     guard let `self` = self, let rp = resourcePair, rp === resourcePair, rp.resource == rd.0 else {
                         return
@@ -113,7 +113,7 @@ extension CALayer {
                     return
                 }
                 handleProgress(resource, Float(received)/Float(total)/Float(resourceCount))
-            }, completionHandler: { img, _ in
+            }, completionHandler: { img, _, _ in
                 imageDic_lock.wait()
                 imageDic[resource] = img
                 imageDic_lock.signal()
