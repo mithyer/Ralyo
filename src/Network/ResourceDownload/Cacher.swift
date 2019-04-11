@@ -20,6 +20,8 @@ public protocol Cacher: class {
     func cacheToDisk(data: Data, key: String, completed: ((Bool) -> Void)?)
     func cacheToMemery(data: Data, key: String, completed: ((Bool) -> Void)?)
     
+    func hasObjFromDisk(key: String) -> Bool
+    func hasObjFromMemery(key: String) -> Bool
     func objFromDisk(key: String, got: @escaping ((Data, T)?) -> Void)
     func objFromMemery(key: String, got: @escaping (T?) -> Void)
 

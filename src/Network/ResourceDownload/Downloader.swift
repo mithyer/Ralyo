@@ -31,7 +31,7 @@ public class Downloader {
     }
     
     
-    public func cacheDownload<K: Cacher>(cacher: K, resource: Resource, priority: Float = 0, handlerKey: String? = nil, progressHandler: ProgressHandler? = nil, completionHandler: ((K.T?, Bool/*from cache*/, Error?) -> Void)? = nil) {
+    public func cacheDownload<K: Cacher>(cacher: K, resource: Resource, loadCacheFirst: Bool = true, priority: Float = 0, handlerKey: String? = nil, progressHandler: ProgressHandler? = nil, completionHandler: ((K.T?, Bool/*from cache*/, Error?) -> Void)? = nil) {
         
         let startDownload = { [weak self, weak cacher] in
             self?.download(resource: resource, priority: priority, handlerKey: handlerKey, progressHandler: progressHandler, completionHandler: { (data, error) in
@@ -49,27 +49,31 @@ public class Downloader {
             })
         }
         
-        let key = resource.cacheKey
-        let tryGetObjFromDisk = { [weak cacher] in
-            cacher?.objFromDisk(key: key) { res in
-                if let res = res {
-                    cacher?.cacheToMemery(data: res.0, key: key, completed: nil)
-                    completionHandler?(res.1, true, nil)
-                } else {
-                    startDownload()
+        if loadCacheFirst {
+            let key = resource.cacheKey
+            let tryGetObjFromDisk = { [weak cacher] in
+                cacher?.objFromDisk(key: key) { res in
+                    if let res = res {
+                        cacher?.cacheToMemery(data: res.0, key: key, completed: nil)
+                        completionHandler?(res.1, true, nil)
+                    } else {
+                        startDownload()
+                    }
                 }
             }
-        }
-        
-        cacher.objFromMemery(key: key) { obj in
-            if let obj = obj {
-                completionHandler?(obj, true, nil)
-            } else {
-                tryGetObjFromDisk()
+            
+            cacher.objFromMemery(key: key) { obj in
+                if let obj = obj {
+                    completionHandler?(obj, true, nil)
+                } else {
+                    tryGetObjFromDisk()
+                }
             }
+        } else {
+            startDownload()
         }
     }
-    
+
     
     public func isDownloading(resource: Resource) -> Bool {
         let res = nil != distributer.tasksDic[resource]
