@@ -10,7 +10,7 @@ import UIKit
 
 public func console_print<T>(_ item: @autoclosure () -> T, color: @autoclosure () -> UIColor? = nil, global: Bool? = nil, file: StaticString? = #file, line: UInt? = #line) {
     #if !PUBLISH
-    Console.print(item, color: color(), global: global, file: file, line: line, isInput: false)
+    Console.print(item(), color: color(), global: global, file: file, line: line, isInput: false)
     #endif
 }
 
@@ -27,7 +27,7 @@ public func console_assert(_ condition: @autoclosure () -> Bool, _ message: @aut
 
 public func console_assertFailure(_ message: @autoclosure () -> String = "", file: StaticString = #file, line: UInt = #line) {
     #if !PUBLISH
-    console_assert(false, message, file: file, line: line)
+    console_assert(false, message(), file: file, line: line)
     #endif
 }
 

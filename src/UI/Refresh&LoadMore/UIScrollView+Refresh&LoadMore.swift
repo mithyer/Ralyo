@@ -219,15 +219,15 @@ public extension UIScrollView {
         }()
     }
     
-    public var refresh: Refresh {
+    var refresh: Refresh {
         return self.refreshAndLoadMore.refresh
     }
     
-    public var loadMore: LoadMore {
+    var loadMore: LoadMore {
         return self.refreshAndLoadMore.loadMore
     }
     
-    public func removeRefreshAndLoadMoreObserver() {
+    func removeRefreshAndLoadMoreObserver() {
         if let rl = objc_getAssociatedObject(self, &UIScrollView.refreshAndLoadMoreKey) as? RefreshAndLoadMore {
             objc_setAssociatedObject(self, &UIScrollView.refreshAndLoadMoreKey, nil, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             self.removeObserver(rl, forKeyPath: RefreshAndLoadMore.contentOffsetPath, context: &RefreshAndLoadMore.observeContext)

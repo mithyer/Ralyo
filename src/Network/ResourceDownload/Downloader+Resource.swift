@@ -20,8 +20,8 @@ extension Downloader {
             self.cacheKey = key
         }
         
-        public var hashValue: Int {
-            return cacheKey.hashValue
+        public func hash(into hasher: inout Hasher) {
+            hasher.combine(cacheKey)
         }
         
         public static func ==(lhs: Downloader.Resource, rhs: Downloader.Resource) -> Bool {
