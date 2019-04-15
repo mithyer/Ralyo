@@ -122,7 +122,7 @@ open class ImageCacher: Cacher {
             guard let url = obj as? URL else {
                 continue
             }
-            guard let size = (try? url.resourceValues(forKeys: [URLResourceKey.fileSizeKey]).fileSize) as? Int else {
+            guard let size = try? url.resourceValues(forKeys: [URLResourceKey.fileSizeKey]).fileSize else {
                 continue
             }
             total += UInt64(size)
