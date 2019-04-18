@@ -87,7 +87,7 @@ open class ImageCacher: Cacher {
     open func objFromDisk(key: String, got: @escaping ((Data, T)?) -> Void) {
         self.rwQueue.addOperation {
             let res: (Data, T)? = {
-                guard let data = try? Data.init(contentsOf: URL.init(fileURLWithPath: self.pathForKey(key)), options: [.mappedIfSafe, .uncached]) else {
+                guard self.hasObjFromDisk(key: key), let data = try? Data.init(contentsOf: URL.init(fileURLWithPath: self.pathForKey(key)), options: [.mappedIfSafe, .uncached]) else {
                     return nil
                 }
                 if let image: GIFImage = GIFImage.obj(fromData: data) {
