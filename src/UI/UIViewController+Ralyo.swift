@@ -53,8 +53,21 @@ extension Ralyo where OBJ: UIViewController {
             if let info = self.needToPresentInfos.first {
                 let vcToPresent = info.ctrler
                 
-                if nil == rootVC.presentedViewController {
+                if let presentedViewController = rootVC.presentedViewController  {
                     
+                    if !presentedViewController.isBeingDismissed, let countdown = info.countdown {
+                        if rootVC.presentedViewController == info.ctrler {
+                            info.countdown = countdown - timer.timeInterval
+                            if info.countdown! <= 0 {
+                                info.ctrler.dismiss(animated: info.animated)
+                                self.needToPresentInfos.removeFirst()
+                            }
+                        } else {
+                            self.needToPresentInfos.removeFirst()
+                        }
+                    }
+                    
+                } else {
                     // test is in the window hierarchy, or present will cause memery leak
                     var next: UIResponder?
                     var window: UIWindow?
@@ -73,16 +86,7 @@ extension Ralyo where OBJ: UIViewController {
                     if nil == rootVC.presentedViewController || nil == info.countdown {
                         self.needToPresentInfos.removeFirst()
                     }
-                } else if let countdown = info.countdown {
-                    if rootVC.presentedViewController == info.ctrler {
-                        info.countdown = countdown - timer.timeInterval
-                        if info.countdown! <= 0 {
-                            info.ctrler.dismiss(animated: info.animated)
-                            self.needToPresentInfos.removeFirst()
-                        }
-                    } else {
-                        self.needToPresentInfos.removeFirst()
-                    }
+                    
                 }
             } else {
                 timer.invalidate()
