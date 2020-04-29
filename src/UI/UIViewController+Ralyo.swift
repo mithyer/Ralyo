@@ -25,13 +25,14 @@ extension Ralyo where OBJ: UIViewController {
         var animated: Bool
         var presented: (() -> Void)?
         var countdown: TimeInterval?
-        
+                
         init(ctrler: UIViewController, animated: Bool, dismissSeconds: TimeInterval?, presented: (() -> Void)?) {
             self.ctrler = ctrler
             self.countdown = dismissSeconds
             self.presented = presented
             self.animated = animated
         }
+        
     }
     
     fileprivate class Property: RalyoProperty {
@@ -42,6 +43,7 @@ extension Ralyo where OBJ: UIViewController {
         lazy var needToPresentInfos = [QueuePresentInfo]()
         
         @objc fileprivate func timerUpdate(_ timer: Timer) {
+            
             guard let rootVC = self.rootVC else {
                 timer.invalidate()
                 return
@@ -50,47 +52,44 @@ extension Ralyo where OBJ: UIViewController {
             if rootVC.isBeingDismissed || rootVC.isBeingPresented || !rootVC.isViewLoaded {
                 return
             }
-            if let info = self.needToPresentInfos.first {
-                let vcToPresent = info.ctrler
-                
-                if let presentedViewController = rootVC.presentedViewController  {
-                    
-                    if !presentedViewController.isBeingDismissed, let countdown = info.countdown {
-                        if rootVC.presentedViewController == info.ctrler {
-                            info.countdown = countdown - timer.timeInterval
-                            if info.countdown! <= 0 {
-                                info.ctrler.dismiss(animated: info.animated)
-                                self.needToPresentInfos.removeFirst()
-                            }
-                        } else {
-                            self.needToPresentInfos.removeFirst()
-                        }
-                    }
-                    
-                } else {
-                    // test is in the window hierarchy, or present will cause memery leak
-                    var next: UIResponder?
-                    var window: UIWindow?
-                    repeat {
-                        next = rootVC.next
-                        if let next = next as? UIWindow {
-                            window = next
-                        }
-                    } while nil == window && next != nil
-                    if nil == window {
-                        return
-                    }
-                    
-                    self.queuePresentDelegate?.queuePresentWillPresent?(vcToPresent, onVC: rootVC)
-                    rootVC.present(vcToPresent, animated: info.animated, completion: info.presented)
-                    if nil == rootVC.presentedViewController || nil == info.countdown {
-                        self.needToPresentInfos.removeFirst()
-                    }
-                    
-                }
-            } else {
+            guard let info = self.needToPresentInfos.first else {
                 timer.invalidate()
                 self.queuePresentDelegate?.queuePresentDidEnd?(onVC: rootVC)
+                return
+            }
+            if let presentedVC = rootVC.presentedViewController {
+                if info.ctrler == presentedVC {
+                    if let countdown = info.countdown {
+                        info.countdown = countdown - timer.timeInterval
+                        if info.countdown! <= 0 {
+                            info.ctrler.dismiss(animated: info.animated)
+                            self.needToPresentInfos.removeFirst()
+                            return
+                        }
+                    } else {
+                        info.ctrler.dismiss(animated: info.animated)
+                        self.needToPresentInfos.removeFirst()
+                        return
+                    }
+                }
+                return
+            }
+            var next: UIResponder? = rootVC
+            var window: UIWindow?
+            repeat {
+                next = next?.next
+                if let next = next as? UIWindow {
+                    window = next
+                }
+            } while (nil == window) && (nil != next)
+            if nil == window {
+                return
+            }
+
+            self.queuePresentDelegate?.queuePresentWillPresent?(info.ctrler, onVC: rootVC)
+            rootVC.present(info.ctrler, animated: info.animated, completion: info.presented)
+            if rootVC.presentedViewController == info.ctrler && nil == info.countdown {
+                self.needToPresentInfos.removeFirst()
             }
         }
     }
