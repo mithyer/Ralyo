@@ -35,4 +35,4 @@
 ### Method 2 (Custom)
 
 - Customize your sharing experience by generating your own link.
-- Refer to this demo: [Ralyo Subscription Demo](https://github.com/mithyer/ralyo-subscription-demo/blob/main/demo/index).
+- Refer to this demo: [Ralyo Subscription Demo](https://raw.githubusercontent.com/mithyer/ralyo-subscription-demo/main/demo/index).
