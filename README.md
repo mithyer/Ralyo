@@ -1,4 +1,4 @@
-# Ralyo: A Tool for AI Music Subscription, Sharing, and Playback
+# Ralyo - A Tool for AI Music Subscription, Sharing, and Playback
 
 ## Current Version Features (v1.0.0)
 
