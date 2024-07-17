@@ -36,3 +36,5 @@
 
 - Customize your sharing experience by generating your own link.
 - Refer to this demo: [Ralyo Subscription Demo](https://raw.githubusercontent.com/mithyer/ralyo-subscription-demo/main/demo/index).
+  
+## Any issues pls submmit to [ralyo-issues](https://github.com/mithyer/ralyo/issues)
