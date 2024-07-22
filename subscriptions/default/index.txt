@@ -7,10 +7,10 @@ name: Ralyo - random
 creator: ralyo
 
 #  <deprecated: use poster_url instead>
-small_poster_url: https://r.886996007.xyz/subscriptions/default/poster_small.png 
+small_poster_url: https://r.886996007.xyz/subscriptions/default/poster.png 
 
 # <deprecated: use poster_url instead>
-large_poster_url: https://r.886996007.xyz/subscriptions/default/poster_large.png
+large_poster_url: https://r.886996007.xyz/subscriptions/default/poster.png
 
 # Poster displayed in app
 poster_url: https://r.886996007.xyz/subscriptions/default/poster.png
