@@ -1,11 +1,11 @@
 # Ralyo
 ## Tool for AI music subscription, sharing, and playback
 [Appstore Download Link](https://apps.apple.com/app/id6504747254)
-## Current Version Features (v1.0.0)
+## Current Version Features (v1.1.0)
 
 ### 1.Subscribe to AI Music Libraries
-
-- Subscribe to AI music libraries created by others (currently supports SUNO only).
+- supports SUNO & UDIO.
+- Subscribe to AI music libraries created by others.
 - Combine multiple libraries into a single collection.
 - Create multiple collections, each corresponding to a playback stream.
 
