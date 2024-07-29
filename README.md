@@ -4,7 +4,7 @@
 ## Last Version Features (v1.1.0)
 
 ### 1.Subscribe to AI Music Libraries
-- supports SUNO & UDIO.
+- Supports SUNO & UDIO.
 - Subscribe to AI music libraries created by others.
 - Combine multiple libraries into a single collection.
 - Create multiple collections, each corresponding to a playback stream.
