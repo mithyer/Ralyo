@@ -14,7 +14,6 @@
 - Create your own music libraries.
 - Generate a shareable link.
 - Share the link with other users.
-- Share song to others.
 
 ### 3.Customize Playback Ratios
 
@@ -25,6 +24,10 @@
 
 - Rate individual tracks.
 - Add tracks to your favorites.
+
+### 5.Share Music
+
+- Share music to other users.
 
 ## About Creating Music Libraries
 
