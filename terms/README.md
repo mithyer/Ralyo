@@ -58,6 +58,19 @@ Ralyo reserves the right to modify these Terms at any time. Your continued use o
 
 These Terms are governed by and construed in accordance with the laws of the jurisdiction in which Ralyo operates, without regard to its conflict of law principles.
 
+## 13. Subscription Membership and In-App Purchases
+
+Ralyo offers subscription-based memberships that can be purchased through in-app purchases (IAP).
+Subscription prices and durations will be clearly displayed before purchase.
+Payment will be charged to your Apple ID or Google Play account at confirmation of purchase.
+Subscriptions automatically renew unless auto-renew is turned off at least 24-hours before the end of the current period.
+You can manage and cancel your subscriptions by going to your account settings on the App Store or Google Play Store after purchase.
+No refund will be provided for the unused portion of a subscription period.
+Any unused portion of a free trial period will be forfeited when you purchase a subscription.
+Ralyo reserves the right to change subscription fees upon reasonable notice. Any price changes will apply to the next subscription period.
+Certain features of the app may only be available to subscription members.
+By purchasing a subscription, you agree to these terms and conditions.
+
 ## Contact Information
 
 If you have any questions about these Terms, please contact us at ralyo@886996007.xyz.
