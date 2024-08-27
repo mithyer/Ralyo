@@ -85,3 +85,30 @@ Ralyo is not intended for use by children under the age of 13. We do not knowing
 ## 7. Changes to This Privacy Policy
 
 We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page. You are advised to review this Privacy
+
+## 8. Subscription and Payment Information
+
+### 8.1 Collection of Payment Information
+When you purchase a subscription through in-app purchases, payment information is collected and processed by the app store (Apple App Store or Google Play Store) through which you made the purchase. Ralyo does not directly collect or store your full payment information.
+
+### 8.2 Subscription Status
+We collect and store information about your subscription status, including the type of subscription you have, when it started, and when it will renew or expire.
+
+### 8.3 Usage of Subscription Information
+We use information about your subscription status to:
+
+Provide access to subscription-only features
+Send reminders about upcoming renewals or expirations
+Improve our subscription offerings and pricing models
+
+### 8.4 Sharing of Subscription Information
+We do not share your individual subscription information with third parties, except as necessary to provide the service (e.g., with our payment processors) or as required by law.
+
+### 8.5 Retention of Subscription Data
+We retain information about your subscription for as long as your account is active and for a period thereafter for record-keeping purposes.
+
+### 8.6 Cancellation and Refunds
+Information about subscription cancellations and refunds is handled in accordance with the policies of the app store through which you made the purchase. Please refer to their respective policies for more information.
+
+## 9. Changes to This Privacy Policy
+We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "last modified" date. You are advised to review this Privacy Policy periodically for any changes.
