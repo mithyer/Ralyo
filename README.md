@@ -1,6 +1,7 @@
 # Ralyo
 ## Tool for AI music subscription, sharing, and playback
-[Appstore Download Link](https://apps.apple.com/app/id6504747254)
+- What Ralyo basically can do: Gathering AI music generated from different sources like SUNO/UDIO, creating your own library including them, sharing them with your friends. Or subscribe to lists of songs depicted by a web page which is customized by other people (following the format Ralyo can parse), organize those subscriptions into several collections, and play them in Ralyo. It could be a good collector and player. Moreover, you can rate each song (already implemented) and write comments (upcoming feature) to discuss them with others.
+- [Appstore Download Link](https://apps.apple.com/app/id6504747254)
 ## Last Version Features
 
 ### 1.Subscribe to AI Music Libraries
